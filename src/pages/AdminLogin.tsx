@@ -13,7 +13,7 @@ const AdminLogin: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('https://d495-2400-adc3-906-4500-d085-f62c-aa92-831d.ngrok-free.app/api/auth/admin-login', {
+      const res = await fetch('/api/auth/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
