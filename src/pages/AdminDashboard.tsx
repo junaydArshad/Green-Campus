@@ -20,7 +20,7 @@ const AdminDashboard: React.FC = () => {
       setError('');
       try {
         const token = localStorage.getItem('adminToken');
-        const res = await fetch('/api/trees/all', {
+        const res = await fetch('https://d495-2400-adc3-906-4500-d085-f62c-aa92-831d.ngrok-free.app/api/trees/all', {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) {

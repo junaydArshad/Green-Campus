@@ -1,6 +1,6 @@
 import { User, Tree, TreeSpecies, TreePhoto, TreeMeasurement, CareActivity, DashboardStats, AuthResponse } from '../types';
 
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = 'https://d495-2400-adc3-906-4500-d085-f62c-aa92-831d.ngrok-free.app/api';
 
 // Helper function for API calls
 async function apiCall<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
