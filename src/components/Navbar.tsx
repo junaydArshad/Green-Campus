@@ -8,7 +8,8 @@ import {
   PlusIcon, 
   UserIcon,
   Bars3Icon,
-  XMarkIcon
+  XMarkIcon,
+  TrophyIcon
 } from '@heroicons/react/24/outline';
 
 const Navbar: React.FC = () => {
@@ -26,6 +27,7 @@ const Navbar: React.FC = () => {
     { name: 'My Trees', href: '/trees', icon: ChartBarIcon },
     { name: 'Plant Tree', href: '/plant', icon: PlusIcon },
     { name: 'Map', href: '/map', icon: MapIcon },
+    { name: 'Leaderboard', href: '/leaderboard', icon: TrophyIcon },
   ];
 
   return (

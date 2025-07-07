@@ -86,6 +86,54 @@ const TreeDetail: React.FC = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  // Get watering frequency based on tree species
+  const getWateringFrequency = (speciesName?: string) => {
+    if (!speciesName) return 7; // Default to weekly
+    
+    const species = speciesName.toLowerCase();
+    if (species.includes('willow')) return 3; // Willow needs frequent watering
+    if (species.includes('oak')) return 7; // Oak weekly
+    if (species.includes('maple')) return 5; // Maple every 5 days
+    if (species.includes('pine')) return 10; // Pine is drought tolerant
+    if (species.includes('cherry')) return 6; // Cherry every 6 days
+    
+    return 7; // Default weekly
+  };
+
+  // Get last watering date
+  const getLastWatering = () => {
+    const wateringActivities = activities.filter(activity => activity.activity_type === 'watering');
+    if (wateringActivities.length === 0) return null;
+    
+    // Sort by date and get the most recent
+    return wateringActivities.sort((a, b) => 
+      new Date(b.activity_date).getTime() - new Date(a.activity_date).getTime()
+    )[0];
+  };
+
+  // Check if tree needs watering
+  const needsWatering = () => {
+    const lastWatering = getLastWatering();
+    if (!lastWatering) return true; // If never watered, needs watering
+    
+    const frequency = getWateringFrequency(tree?.species_name);
+    const lastWateringDate = new Date(lastWatering.activity_date);
+    const today = new Date();
+    const daysSinceWatering = Math.floor((today.getTime() - lastWateringDate.getTime()) / (1000 * 60 * 60 * 24));
+    
+    return daysSinceWatering >= frequency;
+  };
+
+  // Get days since last watering
+  const getDaysSinceWatering = () => {
+    const lastWatering = getLastWatering();
+    if (!lastWatering) return null;
+    
+    const lastWateringDate = new Date(lastWatering.activity_date);
+    const today = new Date();
+    return Math.floor((today.getTime() - lastWateringDate.getTime()) / (1000 * 60 * 60 * 24));
+  };
+
   // Handlers for modals
   const openMeasurementModal = () => { setShowMeasurementModal(true); setActionError(''); };
   const closeMeasurementModal = () => { setShowMeasurementModal(false); setMeasurementValue(''); setMeasurementNotes(''); };
@@ -312,6 +360,71 @@ const TreeDetail: React.FC = () => {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Watering Status */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Watering Status</h2>
+            {needsWatering() ? (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-red-800">Please water the tree today!</h3>
+                    <p className="text-sm text-red-700 mt-1">
+                      {getLastWatering() 
+                        ? `It's been ${getDaysSinceWatering()} days since last watering`
+                        : 'This tree has never been watered'
+                      }
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <h3 className="text-sm font-medium text-green-800">Tree is well watered!</h3>
+                    <p className="text-sm text-green-700 mt-1">
+                      Last watered {getDaysSinceWatering()} days ago
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Watering Frequency:</span>
+                <span className="text-sm font-medium">
+                  Every {getWateringFrequency(tree?.species_name)} days
+                </span>
+              </div>
+              {getLastWatering() && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Last Watered:</span>
+                  <span className="text-sm font-medium">
+                    {formatDate(getLastWatering()!.activity_date)}
+                  </span>
+                </div>
+              )}
+              {tree?.care_instructions && (
+                <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-blue-800">
+                    <strong>Care Tip:</strong> {tree.care_instructions}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Care Activities */}
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Care Activities</h2>
@@ -340,6 +453,19 @@ const TreeDetail: React.FC = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
             <div className="space-y-3">
+              {needsWatering() && (
+                <button 
+                  className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 font-medium" 
+                  onClick={() => {
+                    setCareType('watering');
+                    setCareDate(new Date().toISOString().slice(0, 10));
+                    setCareNotes('Quick watering logged');
+                    openCareModal();
+                  }}
+                >
+                  💧 Water Tree Now
+                </button>
+              )}
               <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700" onClick={openMeasurementModal}>
                 Add Measurement
               </button>

@@ -6,7 +6,8 @@ import {
   PlusIcon, 
   MapIcon,
   CalendarIcon,
-  ArrowTrendingUpIcon
+  ArrowTrendingUpIcon,
+  TrophyIcon
 } from '@heroicons/react/24/outline';
 import { DashboardStats, Tree } from '../types';
 import { dashboardAPI } from '../services/api';
@@ -137,7 +138,7 @@ const Dashboard: React.FC = () => {
       {/* Quick Actions */}
       <div className="card">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           <Link
             to="/plant"
             className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
@@ -158,6 +159,13 @@ const Dashboard: React.FC = () => {
           >
             <MapIcon className="h-6 w-6 text-forest-green mr-3" />
             <span className="font-medium">View Map</span>
+          </Link>
+          <Link
+            to="/leaderboard"
+            className="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <TrophyIcon className="h-6 w-6 text-forest-green mr-3" />
+            <span className="font-medium">Leaderboard</span>
           </Link>
           <Link
             to="/profile"

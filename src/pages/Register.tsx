@@ -71,7 +71,7 @@ const Register: React.FC = () => {
               Registration Successful!
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              Please check your email for verification instructions.
+              Your account has been created successfully. You can now log in.
             </p>
             <div className="mt-6">
               <Link

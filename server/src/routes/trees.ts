@@ -57,7 +57,7 @@ router.get('/', authenticateToken, (req: Request, res: Response) => {
 // Get specific tree
 router.get('/:id', authenticateToken, (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
-  const tree = db.getTreeById(id);
+  const tree = db.getTreeByIdWithSpecies(id);
   if (!tree) {
     return res.status(404).json({ error: 'Tree not found' });
   }

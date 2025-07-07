@@ -1,4 +1,4 @@
-import { User, Tree, TreeSpecies, TreePhoto, TreeMeasurement, CareActivity, DashboardStats, AuthResponse } from '../types';
+import { User, Tree, TreeSpecies, TreePhoto, TreeMeasurement, CareActivity, DashboardStats, AuthResponse, LeaderboardEntry } from '../types';
 
 const API_BASE_URL = 'http://localhost:4000/api';
 
@@ -41,12 +41,6 @@ export const authAPI = {
       body: JSON.stringify(credentials),
     }),
 
-  verifyEmail: async (data: { email: string; token: string }) =>
-    apiCall<{ message: string }>('/auth/verify', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
-
   resetPasswordRequest: async (email: string) =>
     apiCall<{ message: string }>('/auth/reset-request', {
       method: 'POST',
@@ -75,6 +69,8 @@ export const userAPI = {
       method: 'PUT',
       body: JSON.stringify(data),
     }),
+
+  getLeaderboard: () => apiCall<LeaderboardEntry[]>('/user/leaderboard'),
 
   // Avatar upload endpoint is not implemented in backend, so we comment it out to avoid errors
   // uploadAvatar: async (file: File) => {

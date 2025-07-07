@@ -45,3 +45,47 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 # Green-Campus
+
+## Environment Setup
+
+This project requires environment variables to be set up for proper functionality. Follow these steps to configure your environment:
+
+### 1. Create Environment Files
+
+#### Frontend Environment File
+Create a `.env.local` file in the root directory of the project with the following content:
+
+```
+# Google Maps API Key
+REACT_APP_GOOGLE_MAPS_API_KEY=AIzaSyAmzPRGXPuBkn1TPGjq_idQqOJaL4YcaqY
+```
+
+#### Backend Environment File (Optional)
+If you want to customize server settings, create a `.env` file in the `server/` directory:
+
+```
+# Server Configuration
+PORT=4000
+JWT_SECRET=your-secret-key-here
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin
+```
+
+### 2. Environment Variables
+
+The following environment variables are used in this project:
+
+#### Frontend (React App)
+- `REACT_APP_GOOGLE_MAPS_API_KEY`: Your Google Maps API key for map functionality
+
+#### Backend (Server)
+- `PORT`: Server port (defaults to 4000)
+- `JWT_SECRET`: Secret key for JWT token signing (defaults to 'changeme')
+- `ADMIN_USERNAME`: Admin username (defaults to 'admin')
+- `ADMIN_PASSWORD`: Admin password (defaults to 'admin')
+
+### 3. Security Note
+
+The `.env.local` file is already included in `.gitignore` to prevent sensitive information from being committed to version control. Never commit API keys or other sensitive information to your repository.
+
+## Available Scripts

@@ -19,34 +19,17 @@ router.post('/register', async (req: Request, res: Response) => {
     if (db.getUserByEmail(email)) {
       return res.status(409).json({ error: 'Email already registered' });
     }
-    const verification_token = crypto.randomBytes(24).toString('hex');
     const user = await db.createUser({
       email,
       password_hash: password,
       full_name,
       location: location || null,
-      email_verified: false,
-      verification_token
+      email_verified: true,
+      verification_token: null
     });
-    // TODO: Send verification email with token
-    res.json({ message: 'Registered. Please verify your email.', user: { ...user, password_hash: undefined } });
+    res.json({ message: 'Registration successful! You can now log in.', user: { ...user, password_hash: undefined } });
   } catch (error) {
     console.error('Registration error:', error); 
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Email verification
-router.post('/verify', (req: Request, res: Response) => {
-  try {
-    const { email, token } = req.body;
-    const user = db.getUserByEmail(email);
-    if (!user || user.verification_token !== token) {
-      return res.status(400).json({ error: 'Invalid token' });
-    }
-    db.updateUser(user.id!, { email_verified: true, verification_token: null });
-    res.json({ message: 'Email verified' });
-  } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -59,7 +42,6 @@ router.post('/login', async (req: Request, res: Response) => {
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
     const valid = await db.verifyPassword(email, password);
     if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
-    if (!user.email_verified) return res.status(403).json({ error: 'Email not verified' });
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
     res.json({ token, user: { ...user, password_hash: undefined } });
   } catch (error) {

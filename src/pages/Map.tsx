@@ -16,7 +16,7 @@ const Map: React.FC = () => {
   const [selectedTree, setSelectedTree] = useState<Tree | null>(null);
 
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: 'AIzaSyBTuQbA4KfUbVmN_rCpNBEQyw3YGHm97mQ', // Google Maps API Key (keep confidential)
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '',
   });
 
   useEffect(() => {

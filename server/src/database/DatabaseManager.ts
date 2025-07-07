@@ -176,7 +176,6 @@ class DatabaseManager {
   private createIndexes() {
     this.db.exec(`
       CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-      CREATE INDEX IF NOT EXISTS idx_users_verification_token ON users(verification_token);
       CREATE INDEX IF NOT EXISTS idx_trees_user_id ON trees(user_id);
       CREATE INDEX IF NOT EXISTS idx_trees_species_id ON trees(species_id);
       CREATE INDEX IF NOT EXISTS idx_trees_location ON trees(latitude, longitude);
@@ -225,13 +224,12 @@ class DatabaseManager {
     } else {
       email_verified = userData.email_verified ? 1 : 0;
     }
-    const verification_token = userData.verification_token ?? null;
 
-    console.log('Creating user with:', { email, hashedPassword, full_name, location, email_verified, verification_token });
+    console.log('Creating user with:', { email, hashedPassword, full_name, location, email_verified });
 
     const stmt = this.db.prepare(`
-      INSERT INTO users (email, password_hash, full_name, location, email_verified, verification_token)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO users (email, password_hash, full_name, location, email_verified)
+      VALUES (?, ?, ?, ?, ?)
     `);
 
     const result = stmt.run(
@@ -239,8 +237,7 @@ class DatabaseManager {
       hashedPassword,
       full_name,
       location,
-      email_verified,
-      verification_token
+      email_verified
     );
 
     const user = this.getUserById(result.lastInsertRowid as number);
@@ -322,6 +319,16 @@ class DatabaseManager {
   getTreeById(id: number): Tree | undefined {
     const stmt = this.db.prepare('SELECT * FROM trees WHERE id = ?');
     return stmt.get(id) as Tree | undefined;
+  }
+
+  getTreeByIdWithSpecies(id: number): (Tree & { species_name?: string; scientific_name?: string; care_instructions?: string }) | undefined {
+    const stmt = this.db.prepare(`
+      SELECT t.*, ts.name as species_name, ts.scientific_name, ts.care_instructions
+      FROM trees t 
+      JOIN tree_species ts ON t.species_id = ts.id 
+      WHERE t.id = ?
+    `);
+    return stmt.get(id) as (Tree & { species_name?: string; scientific_name?: string; care_instructions?: string }) | undefined;
   }
 
   getTreesByUserId(userId: number): Tree[] {
@@ -441,6 +448,24 @@ class DatabaseManager {
       JOIN users u ON t.user_id = u.id
       JOIN tree_species s ON t.species_id = s.id
       ORDER BY t.planted_date DESC
+    `);
+    return stmt.all();
+  }
+
+  // Get leaderboard data
+  getLeaderboard(): any[] {
+    const stmt = this.db.prepare(`
+      SELECT 
+        u.id,
+        u.full_name,
+        u.email,
+        u.location,
+        COUNT(t.id) as tree_count,
+        ROW_NUMBER() OVER (ORDER BY COUNT(t.id) DESC) as rank
+      FROM users u
+      LEFT JOIN trees t ON u.id = t.user_id
+      GROUP BY u.id, u.full_name, u.email, u.location
+      ORDER BY tree_count DESC, u.full_name ASC
     `);
     return stmt.all();
   }

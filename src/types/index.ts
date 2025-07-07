@@ -37,6 +37,7 @@ export interface Tree {
   updated_at?: string;
   species_name?: string;
   scientific_name?: string;
+  care_instructions?: string;
 }
 
 export interface TreePhoto {
@@ -78,6 +79,15 @@ export interface DashboardStats {
 export interface AuthResponse {
   token: string;
   user: User;
+}
+
+export interface LeaderboardEntry {
+  id: number;
+  full_name: string;
+  email: string;
+  location?: string;
+  tree_count: number;
+  rank: number;
 }
 
 export interface ApiResponse<T> {

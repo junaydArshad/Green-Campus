@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
-import { authAPI } from '../services/api';
+import { authAPI, userAPI } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -8,7 +8,6 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (userData: { email: string; password: string; full_name: string; location?: string }) => Promise<void>;
   logout: () => void;
-  verifyEmail: (email: string, token: string) => Promise<void>;
   resetPasswordRequest: (email: string) => Promise<void>;
   resetPassword: (email: string, token: string, newPassword: string) => Promise<void>;
 }
@@ -32,15 +31,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored token and validate it
-    const token = localStorage.getItem('token');
-    if (token) {
-      // TODO: Validate token with backend
-      // For now, just check if token exists
+    // Check for stored token and validate it with backend
+    const validateToken = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          // Validate token by fetching user profile
+          const userData = await userAPI.getProfile();
+          setUser(userData);
+        } catch (error) {
+          // Token is invalid, remove it
+          console.log('Invalid token, removing from localStorage');
+          localStorage.removeItem('token');
+          setUser(null);
+        }
+      }
       setLoading(false);
-    } else {
-      setLoading(false);
-    }
+    };
+
+    validateToken();
   }, []);
 
   const login = async (email: string, password: string) => {
@@ -66,14 +75,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setUser(null);
   };
 
-  const verifyEmail = async (email: string, token: string) => {
-    try {
-      await authAPI.verifyEmail({ email, token });
-    } catch (error) {
-      throw error;
-    }
-  };
-
   const resetPasswordRequest = async (email: string) => {
     try {
       await authAPI.resetPasswordRequest(email);
@@ -96,7 +97,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     login,
     register,
     logout,
-    verifyEmail,
     resetPasswordRequest,
     resetPassword,
   };
