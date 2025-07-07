@@ -55,10 +55,7 @@ This project requires environment variables to be set up for proper functionalit
 #### Frontend Environment File
 Create a `.env.local` file in the root directory of the project with the following content:
 
-```
-# Google Maps API Key
-REACT_APP_GOOGLE_MAPS_API_KEY=AIzaSyAmzPRGXPuBkn1TPGjq_idQqOJaL4YcaqY
-```
+``
 
 #### Backend Environment File (Optional)
 If you want to customize server settings, create a `.env` file in the `server/` directory:
