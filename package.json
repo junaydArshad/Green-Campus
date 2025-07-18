@@ -23,6 +23,7 @@
     "bcryptjs": "^3.0.2",
     "better-sqlite3": "^12.2.0",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^7.0.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-modal": "^3.16.3",
@@ -63,6 +64,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/nodemailer": "^6.4.17",
     "@types/react-modal": "^3.16.3"
   },
   "proxy": "http://localhost:4000"

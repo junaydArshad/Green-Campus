@@ -201,7 +201,8 @@ class DatabaseManager {
         ['Maple Tree', 'Acer', 'Beautiful foliage tree with seasonal color changes', 'Regular watering, avoid overwatering', 'medium', 60],
         ['Pine Tree', 'Pinus', 'Evergreen tree that provides year-round greenery', 'Drought tolerant once established', 'medium', 70],
         ['Willow Tree', 'Salix', 'Fast-growing tree that loves water and wet soil', 'Keep soil moist, regular watering', 'fast', 40],
-        ['Cherry Tree', 'Prunus', 'Flowering tree that produces beautiful spring blossoms', 'Well-draining soil, moderate watering', 'medium', 30]
+        ['Cherry Tree', 'Prunus', 'Flowering tree that produces beautiful spring blossoms', 'Well-draining soil, moderate watering', 'medium', 30],
+        ['Others', null, 'Other or unlisted tree species', 'Follow general care guidelines', 'medium', 20]
       ];
 
       sampleSpecies.forEach(species => {

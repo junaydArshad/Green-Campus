@@ -140,6 +140,7 @@ const PlantTree: React.FC = () => {
                   {spec.name} {spec.scientific_name && `(${spec.scientific_name})`}
                 </option>
               ))}
+              <option value="other">Other</option>
             </select>
           </div>
 
