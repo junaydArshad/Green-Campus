@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import path from 'path';
 import dotenv from 'dotenv';
+import fs from 'fs';
 dotenv.config();
 
 const router = Router();
@@ -85,6 +86,29 @@ router.get('/:treeId/photos', authenticateToken, (req: Request, res: Response) =
   if (!tree || tree.user_id !== userId) return res.status(404).json({ error: 'Tree not found' });
   const photos = db.getTreePhotosByTreeId(treeId);
   res.json(photos);
+});
+
+// Delete photo
+router.delete('/:treeId/photos/:photoId', authenticateToken, (req: Request, res: Response) => {
+  const userId = (req as any).user.id;
+  const treeId = parseInt(req.params.treeId, 10);
+  const photoId = parseInt(req.params.photoId, 10);
+  
+  const tree = db.getTreeById(treeId);
+  if (!tree || tree.user_id !== userId) return res.status(404).json({ error: 'Tree not found' });
+  
+  const photo = db.getTreePhotoById(photoId);
+  if (!photo || photo.tree_id !== treeId) return res.status(404).json({ error: 'Photo not found' });
+  
+  // Delete the physical file
+  const filePath = path.join(__dirname, '../../data', photo.photo_url);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+  
+  // Delete from database
+  db.deleteTreePhoto(photoId);
+  res.json({ message: 'Photo deleted successfully' });
 });
 
 // Update health status

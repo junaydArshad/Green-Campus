@@ -163,6 +163,11 @@ export const growthAPI = {
   getPhotos: (treeId: number) =>
     apiCall<TreePhoto[]>(`/growth/${treeId}/photos`),
 
+  deletePhoto: (treeId: number, photoId: number) =>
+    apiCall<{ message: string }>(`/growth/${treeId}/photos/${photoId}`, {
+      method: 'DELETE',
+    }),
+
   updateHealth: (treeId: number, healthStatus: Tree['health_status']) =>
     apiCall<Tree>(`/growth/${treeId}/health`, {
       method: 'PUT',

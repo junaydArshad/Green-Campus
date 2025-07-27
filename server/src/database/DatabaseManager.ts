@@ -383,6 +383,11 @@ class DatabaseManager {
     return stmt.all(treeId) as TreePhoto[];
   }
 
+  deleteTreePhoto(id: number): void {
+    const stmt = this.db.prepare('DELETE FROM tree_photos WHERE id = ?');
+    stmt.run(id);
+  }
+
   // Tree measurement methods
   addTreeMeasurement(measurementData: Omit<TreeMeasurement, 'id' | 'created_at'>): TreeMeasurement | null {
     const stmt = this.db.prepare(`

@@ -4,6 +4,7 @@ import { Tree, TreeMeasurement, TreePhoto, CareActivity } from '../types';
 import { treesAPI, growthAPI, careAPI } from '../services/api';
 import Modal from 'react-modal';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+import { TrashIcon } from '@heroicons/react/24/outline';
 
 const mapContainerStyle = {
   width: '100%',
@@ -34,6 +35,7 @@ const TreeDetail: React.FC = () => {
   const [careNotes, setCareNotes] = useState('');
   const [actionError, setActionError] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [deletingPhoto, setDeletingPhoto] = useState<number | null>(null);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '',
@@ -205,6 +207,22 @@ const TreeDetail: React.FC = () => {
     }
   };
 
+  const handleDeletePhoto = async (photoId: number) => {
+    if (!window.confirm('Are you sure you want to delete this photo?')) {
+      return;
+    }
+    
+    setDeletingPhoto(photoId);
+    try {
+      await growthAPI.deletePhoto(Number(id), photoId);
+      fetchTreeData(); // Refresh the data
+    } catch (err: any) {
+      setActionError(err.message || 'Failed to delete photo');
+    } finally {
+      setDeletingPhoto(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -339,7 +357,15 @@ const TreeDetail: React.FC = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {photos.map((photo) => (
-                  <div key={photo.id} className="bg-gray-100 rounded-lg p-4">
+                  <div key={photo.id} className="bg-gray-100 rounded-lg p-4 relative">
+                    <button
+                      onClick={() => handleDeletePhoto(photo.id!)}
+                      disabled={deletingPhoto === photo.id}
+                      className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 disabled:opacity-50 z-10"
+                      title="Delete photo"
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </button>
                     <div className="aspect-w-16 aspect-h-9 mb-2">
                       <img
                         src={`http://localhost:4000${photo.photo_url}`}
@@ -351,8 +377,18 @@ const TreeDetail: React.FC = () => {
                     {photo.caption && (
                       <p className="text-sm text-gray-900 mt-1">{photo.caption}</p>
                     )}
+                    {deletingPhoto === photo.id && (
+                      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+                        <div className="text-white">Deleting...</div>
+                      </div>
+                    )}
                   </div>
                 ))}
+              </div>
+            )}
+            {actionError && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-600 text-sm">{actionError}</p>
               </div>
             )}
           </div>
